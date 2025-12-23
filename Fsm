@@ -1,0 +1,142 @@
+family-tree/
+│── index.html
+│── style.css
+│── script.js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Family Tree</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Family Member Tree</h1>
+
+<div class="controls">
+  <input type="text" id="name" placeholder="Name">
+  <select id="relation">
+    <option value="biological">Biological Parent</option>
+    <option value="step">Step Parent</option>
+    <option value="adopted">Adopted Parent</option>
+    <option value="child">Child</option>
+  </select>
+  <input type="text" id="parent" placeholder="Parent Name (optional)">
+  <button onclick="addMember()">Add Member</button>
+</div>
+
+<div id="tree"></div>
+
+<script src="script.js"></script>
+</body>
+</html>body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+.controls {
+  margin: 20px;
+}
+
+.controls input,
+.controls select,
+.controls button {
+  padding: 8px;
+  margin: 5px;
+}
+
+#tree {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.member {
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px;
+  min-width: 160px;
+  background: #fff;
+}
+
+.biological {
+  border-color: #2ecc71;
+}
+
+.step {
+  border-color: #e67e22;
+  border-style: dashed;
+}
+
+.adopted {
+  border-color: #3498db;
+  border-style: dotted;
+}
+
+.child {
+  border-color: #9b59b6;
+}
+
+.relation {
+  font-size: 12px;
+  color: #555;
+}
+const tree = document.getElementById("tree");
+const family = {};
+
+function addMember() {
+  const name = document.getElementById("name").value.trim();
+  const relation = document.getElementById("relation").value;
+  const parent = document.getElementById("parent").value.trim();
+
+  if (!name) {
+    alert("Please enter a name");
+    return;
+  }
+
+  family[name] = { relation, parent };
+
+  renderTree();
+
+  document.getElementById("name").value = "";
+  document.getElementById("parent").value = "";
+}
+
+function renderTree() {
+  tree.innerHTML = "";
+
+  Object.keys(family).forEach(person => {
+    const div = document.createElement("div");
+    div.className = `member ${family[person].relation}`;
+
+    div.innerHTML = `
+      <strong>${person}</strong>
+      <div class="relation">${formatRelation(family[person])}</div>
+    `;
+
+    tree.appendChild(div);
+  });
+}
+
+function formatRelation(member) {
+  if (!member.parent) return member.relation;
+
+  if (member.relation === "step")
+    return `Step parent of ${member.parent}`;
+
+  if (member.relation === "adopted")
+    return `Adopted parent of ${member.parent}`;
+
+  if (member.relation === "biological")
+    return `Biological parent of ${member.parent}`;
+
+  return `Child of ${member.parent}`;
+}
+
